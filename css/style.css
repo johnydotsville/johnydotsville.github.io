@@ -1,3 +1,5 @@
+/* ============================================================*/
+/* common */
 body {
     /*background-color: #2B2B2B;*/
     background-color: #1E1E1E;
@@ -13,8 +15,42 @@ body {
   border: 4px double black;
   padding: 20px;
 }
+/* ============================================================*/
 
 
+
+
+
+/* ============================================================*/
+/* java staff */
+.annot {
+    color: #F4DF3F;
+}
+
+.param {
+    color: #04CE3D;
+    font-family: 'Fira Code'
+}
+
+.enum {
+    color: #B570CC;
+}
+
+.frag {
+    border: 1px #808080 solid;
+    border-radius: 5px;
+    padding: 0 5;
+    background-color: #282828;
+    font-family: 'Fira Code';
+    font-size: 14px;
+}
+/* ============================================================*/
+
+
+
+
+
+/* ============================================================*/
 /* details and summary */
 details {
   /*width: 50%; */
@@ -60,4 +96,4 @@ details > ul {
   padding-bottom: 1rem;
   margin-bottom: 0;
 }
-/* eof details and summary */
+/* ============================================================*/
