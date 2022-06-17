@@ -45,6 +45,19 @@ body {
 figcaption {
     text-align: center;
 }
+
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+ul li::before {
+  content: "\2714";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+  /*color: red; /* Change the color */
+  /*font-weight: bold; /* If you want it to be bold */
+  display: inline-block; /* Needed to add space between the bullet and the text */
+  width: 1em; /* Also needed for space (tweak if needed) */
+  margin-left: -1em; /* Also needed for space (tweak if needed) */
+►}
 /* ============================================================*/
 
 
@@ -55,6 +68,7 @@ figcaption {
 /* java staff */
 .jann {
     color: #F4DF3F;
+    
 }
 
 .jparam {
@@ -69,6 +83,11 @@ figcaption {
 
 .jvalue {
     color: #B570CC;
+}
+
+.jmethod {
+    color: #F45A71;
+    font-family: 'Fira Code'
 }
 
 .inline {
