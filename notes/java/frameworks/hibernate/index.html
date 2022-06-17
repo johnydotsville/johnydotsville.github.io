@@ -1,0 +1,84 @@
+<html>
+    <body>
+        <link rel="stylesheet" href="/css/highlightjs-styles/visual-studio-2015.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <img src="/notes/java/frameworks/hibernate/img/one-to-many_table.svg">
+        <div class="div-1">
+            Не знаю, честно говоря, как сделать лучше - копировать подробные куски или только часть, отвечающую за конкретное сопоставление. По задумке этот конспект не должен быть перегружен. Каждый пример - минимален, чтобы просто хватило понять. Поэтому все-таки я удалю аннотации, относящиеся к другим темам. Возможно, приложу более-менее полноценную программу целиком отдельно к конспекту и буду в потенциально сложных местах указывать, в каком другом моем конспекте можно почитать связанную информацию:
+        </div>
+        <details><summary>Промежуточная сущность</summary>
+            <pre><code class="language-java">
+    @Entity
+    @Table(name = "film_s_category")
+    //@org.hibernate.annotations.Immutable  // потом посмотрим, на что это влияет
+    public class FilmCategory {
+        @Embeddable  // 1. Почему? 2. Почему эти поля просто не сделать частью внешнего класса?
+        public static class Id implements Serializable {
+            @Column(name = "category_id")
+            protected Long categoryId;  // Почему protected, а не private?
+            @Column(name = "film_id")
+            protected Long filmId;
+
+            public Id() { }
+
+            public Id(Long categoryId, Long filmId) {
+                this.categoryId = categoryId;
+                this.filmId = filmId;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Id id = (Id) o;
+                return Objects.equals(categoryId, id.categoryId)
+                        && Objects.equals(filmId, id.filmId);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(categoryId, filmId);
+            }
+        }
+
+        @EmbeddedId
+        protected Id id = new Id();
+
+        @Column(name = "last_update", insertable = false, updatable = false)
+        @org.hibernate.annotations.Generated(
+                value = org.hibernate.annotations.GenerationTime.ALWAYS)
+        @Temporal(value = TemporalType.TIMESTAMP)
+        protected LocalDateTime lastModified;
+
+        @ManyToOne(fetch = FetchType.LAZY)//, cascade = CascadeType.PERSIST)  // а cascade нужен?
+        @JoinColumn(name = "category_id", insertable = false, updatable = false)  // Потом чекнуть, зачем это
+        //org.hibernate.MappingException: Repeated column in mapping for entity: johny.dotsville.domain.FilmCategory column: category_id (should be mapped with insert="false" update="false")
+        // Скорее потому, что фильм и категория
+        protected Category category;
+
+        @ManyToOne(fetch = FetchType.LAZY)//, cascade = CascadeType.PERSIST)
+        @JoinColumn(name = "film_id", insertable = false, updatable = false)  // Потом чекнуть, зачем это
+        protected Film film;
+
+        public FilmCategory() { }
+
+        public FilmCategory(Category category, Film film) {
+            this.category = category;
+            this.film = film;
+
+            this.id.categoryId = category.getId();
+            this.id.filmId = film.getId();
+
+            category.getFilmCategory().add(this);
+            film.getFilmCategory().add(this);
+        }
+
+        ...
+    }
+            </code></pre>
+        </details>
+        <p>Весьма удобно скрывать и показывать текст.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+</html>
