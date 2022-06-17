@@ -2,20 +2,51 @@
     <body>
         <link rel="stylesheet" href="/css/highlightjs-styles/visual-studio-2015.css">
         <link rel="stylesheet" href="/css/style.css">
-        <img src="/notes/java/frameworks/hibernate/img/one-to-many_table.svg">
-        <div class="div-1">
+        
+        <figure class="pic">
+            <img src="/notes/java/frameworks/hibernate/img/one-to-many_table.svg">
+            <figcaption>Пример связи между таблицами</figcaption>
+        </figure>
+        
+        <p class="remark">
             Не знаю, честно говоря, как сделать лучше - копировать подробные куски или только часть, отвечающую за конкретное сопоставление. По задумке этот конспект не должен быть перегружен. Каждый пример - минимален, чтобы просто хватило понять. Поэтому все-таки я удалю аннотации, относящиеся к другим темам. Возможно, приложу более-менее полноценную программу целиком отдельно к конспекту и буду в потенциально сложных местах указывать, в каком другом моем конспекте можно почитать связанную информацию:
-        </div>
+        </p>
+        
+        <p class="quest">Если возникает вопрос, отмечаем его особым классом</p>
         
         <p><em class="annot">@Generated</em> - когда используем аннотации хибера, рекомендуют писать полностью вместе с пакетом. Этой аннотацией помечаем автогенерируемое свойство. С помощью параметра <span class="param">value</span> задаем, при каких операциях хибер должен выполнять запрос для получения из БД этого свойства. При значении <em class="enum">ALWAYS</em> хибер будет вытягивать сгенерированное значение при выполнении и insert-операций, и update-операций.</p>
         
-        <p><em class="annot">@Column</em> - помимо мапинга на столбец БД, указываем при каких операциях хибер должен исключать из запроса этот столбец, т.к. если столбец формируется автоматически базой, мы не должны передавать значение для него в операциях вставки и обновления. В данном случае мы говорим с помощью <span class="frag">insertable = true, updatable = true</span>, что хибер должен *исключать* столбец last_update в запросе и при вставках, и при обновлениях.</p>
+        <p><em class="annot">@Column</em> - помимо мапинга на столбец БД, указываем при каких операциях хибер должен исключать из запроса этот столбец, т.к. если столбец формируется автоматически базой, мы не должны передавать значение для него в операциях вставки и обновления. В данном случае мы говорим с помощью <span class="frag">insertable = true, updatable = true</span>, что хибер должен <em>исключать</em> столбец last_update в запросе и при вставках, и при обновлениях.</p>
         
         <p><em class="annot">@Temporal</em> - возможные значения TIMESTAMP, DATE, TIME. Этой аннотацией нужно обязательно помечать автосвойства, у которых тип - разновидность времени, чтобы хибер корректно заполнял их. По значениям и так понятно что для чего. У нас тип LocalDateTime, т.е. дата со временем, значит и в Temporal указываем дату со временем.</p>
         
         <details>
             <summary>Промежуточная сущность</summary>
-            <pre><code class="language-java">
+            <pre><code class="language-java samplecode">
+    package johny.dotsville.domain;
+
+    import jakarta.persistence.CascadeType;
+    import jakarta.persistence.Column;
+    import jakarta.persistence.Embeddable;
+    import jakarta.persistence.EmbeddedId;
+    import jakarta.persistence.Entity;
+    import jakarta.persistence.FetchType;
+    import jakarta.persistence.JoinColumn;
+    import jakarta.persistence.ManyToMany;
+    import jakarta.persistence.ManyToOne;
+    import jakarta.persistence.Table;
+    import jakarta.persistence.Temporal;
+    import jakarta.persistence.TemporalType;
+
+    import java.io.Serializable;
+    import java.time.LocalDateTime;
+    import java.util.Objects;
+
+    /*
+        А можно ли будет сохранять отдельно фильм и категорию? Допустим, ввести просто новую категорию, пока без фильмов?
+        Или фильм без указания категории.
+        UPD. Сохраняет нормально
+     */
     @Entity
     @Table(name = "film_s_category")
     //@org.hibernate.annotations.Immutable  // потом посмотрим, на что это влияет
@@ -81,8 +112,31 @@
             film.getFilmCategory().add(this);
         }
 
-        ...
+        public LocalDateTime getLastModified() {
+            return lastModified;
+        }
+
+        public void setLastModified(LocalDateTime lastModified) {
+            this.lastModified = lastModified;
+        }
+
+        public Category getCategory() {
+            return category;
+        }
+
+        public void setCategory(Category category) {
+            this.category = category;
+        }
+
+        public Film getFilm() {
+            return film;
+        }
+
+        public void setFilm(Film film) {
+            this.film = film;
+        }
     }
+
             </code></pre>
         </details>
         
